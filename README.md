@@ -25,4 +25,4 @@ if (window.PointerEvent) {
 
 - Se repinte el dibujo.
 
-<img src="img/punto2.1.png">
+<img src="img/punto2.2.png">
