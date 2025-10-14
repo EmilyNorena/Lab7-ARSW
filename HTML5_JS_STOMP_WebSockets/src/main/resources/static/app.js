@@ -32,18 +32,21 @@ var app = (function () {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
-        
-        //subscribe to /topic/TOPICXX when connections succeed
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({}, function(frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/TOPICXX', function (eventbody) {
-                
-                
+            stompClient.subscribe('/topic/newpoint', function(message) {
+                var theObject = JSON.parse(message.body);
+                var x = theObject.x;
+                var y = theObject.y;
+
+                alert("Point received! X: " + x + ", Y: " + y);
+
+                var pt = new Point(x, y);
+                addPointToCanvas(pt);
             });
         });
-
     };
-    
+
     
 
     return {
@@ -56,11 +59,16 @@ var app = (function () {
         },
 
         publishPoint: function(px,py){
-            var pt=new Point(px,py);
-            console.info("publishing point at "+pt);
+            var pt = new Point(px, py);
+            console.info("Publishing point at ", pt);
+            
             addPointToCanvas(pt);
-
-            //publicar el evento
+            if(stompClient !== null && stompClient.connected){
+                stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
+                console.log("Point sent to /topic/newpoint:", pt);
+            } else {
+                console.warn("STOMP client not connected. Point not sent.");
+            }
         },
 
         disconnect: function () {

@@ -3,7 +3,6 @@
 ### Laboratorio - Broker de Mensajes STOMP con WebSockets + HTML5 Canvas.
 
 
-
 - Conectarse con un botón
 - publicar con eventos de mouse
 
@@ -42,19 +41,41 @@ Para esto, realice lo siguiente:
 	stompClient.send("/topic/newpoint", {}, JSON.stringify(pt)); 
 	```
 
+Para implementar esta funcionalidad, primero nos enfocamos en la función `connectAndSubscribe` dentro de `app.js`. Allí nos aseguramos de que el cliente se conecte al tópico `/topic/newpoint`. Una vez establecida la conexión, podemos enviar los datos del punto en formato JSON como texto, utilizando `JSON.stringify`.
+
+![](img/image.png)
+
+Luego, en `app.js`, dentro de la función `publishPoint` (que se activa al hacer clic en el botón correspondiente), hacemos que primero se dibuje el punto en la interfaz y, a continuación, se envíe al servidor a través del cliente STOMP con el formato textual JSON.
+
+![](img/image2.png)
+
+De esta manera, cada vez que se ingresen coordenadas X e Y y se pulse el botón, el punto se grafica y simultáneamente se publica en el tópico `/topic/newpoint`.
+
+
 2. Dentro del módulo JavaScript modifique la función de conexión/suscripción al WebSocket, para que la aplicación se suscriba al tópico "/topic/newpoint" (en lugar del tópico /TOPICOXX). Asocie como 'callback' de este suscriptor una función que muestre en un mensaje de alerta (alert()) el evento recibido. Como se sabe que en el tópico indicado se publicarán sólo puntos, extraiga el contenido enviado con el evento (objeto JavaScript en versión de texto), conviértalo en objeto JSON, y extraiga de éste sus propiedades (coordenadas X y Y). Para extraer el contenido del evento use la propiedad 'body' del mismo, y para convertirlo en objeto, use JSON.parse. Por ejemplo:
 
 	```javascript
 	var theObject=JSON.parse(message.body);
 	```
+
+Actualizamos la función `connectAndSubscribe` para que nos suscriba al tópico `/topic/newpoint`. Cada vez que recibimos un mensaje en ese tópico, tomamos su contenido usando la propiedad body del evento, lo convertimos a un objeto JavaScript con `JSON.parse` y extraemos las coordenadas `x` y `y`. Luego, mostramos una alerta que nos notifique el nuevo punto recibido:
+
+![](img/image3.png)
+
+De esta manera, podemos procesar cada mensaje del tópico y visualizar inmediatamente sus coordenadas.
+
 3. Compile y ejecute su aplicación. Abra la aplicación en varias pestañas diferentes (para evitar problemas con el caché del navegador, use el modo 'incógnito' en cada prueba).
+
 4. Ingrese los datos, ejecute la acción del botón, y verifique que en todas la pestañas se haya lanzado la alerta con los datos ingresados.
 
-5. Haga commit de lo realizado, para demarcar el avance de la parte 2.
+**Pestaña 1:**
+![](img/image pestana1.png)
 
-	```bash
-	git commit -m "PARTE 1".
-	```
+**Pestaña 2:**
+![](img/image pestana2.png)
+
+**Pestaña 3:**
+![](img/image pestana3.png)
 
 
 ## Parte II.
