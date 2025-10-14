@@ -102,13 +102,24 @@ Además, modificamos el callback de la suscripción para que, en lugar de mostra
 Ajuste la aplicación anterior para que pueda manejar más de un dibujo a la vez, manteniendo tópicos independientes. Para esto:
 
 1. Agregue un campo en la vista, en el cual el usuario pueda ingresar un número. El número corresponderá al identificador del dibujo que se creará.
-2. Modifique la aplicación para que, en lugar de conectarse y suscribirse automáticamente (en la función init()), lo haga a través de botón 'conectarse'. Éste, al oprimirse debe realizar la conexión y suscribir al cliente a un tópico que tenga un nombre dinámico, asociado el identificador ingresado, por ejemplo: /topic/newpoint.25, topic/newpoint.80, para los dibujos 25 y 80 respectivamente.
-3. De la misma manera, haga que las publicaciones se realicen al tópico asociado al identificador ingresado por el usuario.
-4. Rectifique que se puedan realizar dos dibujos de forma independiente, cada uno de éstos entre dos o más clientes.
 
-	```bash
-	git commit -m "PARTE 3".
-	```
+2. Modifique la aplicación para que, en lugar de conectarse y suscribirse automáticamente (en la función init()), lo haga a través de botón 'conectarse'. Éste, al oprimirse debe realizar la conexión y suscribir al cliente a un tópico que tenga un nombre dinámico, asociado el identificador ingresado, por ejemplo: /topic/newpoint.25, topic/newpoint.80, para los dibujos 25 y 80 respectivamente.
+
+3. De la misma manera, haga que las publicaciones se realicen al tópico asociado al identificador ingresado por el usuario.
+
+Actualizamos la aplicación para que el usuario pueda ingresar un identificador de dibujo y conectarse a un tópico específico vinculado a ese ID. Modificamos la función `connectAndSubscribe` para que reciba este ID, construya dinámicamente el nombre del tópico como `/topic/newpoint.<ID>` y se suscriba a él.
+
+![](img/image7.png)
+
+![](img/image8.png)
+
+Cada vez que recibimos un mensaje en ese tópico, extraemos su contenido mediante la propiedad body, lo transformamos en un objeto JavaScript con JSON.parse y obtenemos las coordenadas x y y. Luego, dibujamos un punto en el canvas en esas coordenadas, asegurando que cada dibujo permanezca aislado en su propio tópico y los diferentes usuarios no interfieran entre sí.
+
+![](img/image6.png)
+
+Hacemos una prueba de dos navegadores:
+
+![](img/image p3.png)
 
 
 ## Parte IV.

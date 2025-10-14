@@ -23,6 +23,15 @@
     </head>
 
     <body onload="app.init()">
+        <label for="drawingId">Dibujo ID:</label>
+        <input id="drawingId" type="number" min="1" />
+        <button id="connectBtn">Conectarse</button>
+
         <canvas id="canvas" width="800" height="600"></canvas>
+
+        <script src="/webjars/jquery/jquery.min.js"></script>
+        <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+        <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+        <script src="/app.js"></script>
     </body>
 </html>
