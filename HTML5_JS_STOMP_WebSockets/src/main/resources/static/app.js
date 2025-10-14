@@ -9,13 +9,15 @@ var app = (function () {
     
     var stompClient = null;
 
-    var addPointToCanvas = function (point) {        
+    var addPointToCanvas = function(point) {
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         ctx.beginPath();
-        ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
-        ctx.stroke();
+        ctx.arc(point.x, point.y, 1, 0, 2 * Math.PI);
+        ctx.fillStyle = "black";
+        ctx.fill();
     };
+
     
     
     var getMousePosition = function (evt) {
@@ -36,14 +38,11 @@ var app = (function () {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/newpoint', function(message) {
                 var theObject = JSON.parse(message.body);
-                var x = theObject.x;
-                var y = theObject.y;
+                var pt = new Point(theObject.x, theObject.y);
 
-                alert("Point received! X: " + x + ", Y: " + y);
-
-                var pt = new Point(x, y);
                 addPointToCanvas(pt);
             });
+
         });
     };
 
@@ -52,24 +51,24 @@ var app = (function () {
     return {
 
         init: function () {
-            var can = document.getElementById("canvas");
-            
-            //websocket connection
-            connectAndSubscribe();
+            var canvas = document.getElementById("canvas");
+                connectAndSubscribe();
+            canvas.addEventListener("click", function(evt) {
+                var pos = getMousePosition(evt);
+                app.publishPoint(pos.x, pos.y);
+            });
         },
 
-        publishPoint: function(px,py){
+        publishPoint: function(px, py) {
             var pt = new Point(px, py);
-            console.info("Publishing point at ", pt);
-            
+
             addPointToCanvas(pt);
-            if(stompClient !== null && stompClient.connected){
+
+            if (stompClient !== null && stompClient.connected) {
                 stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
-                console.log("Point sent to /topic/newpoint:", pt);
-            } else {
-                console.warn("STOMP client not connected. Point not sent.");
             }
         },
+
 
         disconnect: function () {
             if (stompClient !== null) {

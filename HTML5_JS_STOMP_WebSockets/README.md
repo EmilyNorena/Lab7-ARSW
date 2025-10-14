@@ -83,14 +83,20 @@ De esta manera, podemos procesar cada mensaje del tópico y visualizar inmediata
 Para hacer mas útil la aplicación, en lugar de capturar las coordenadas con campos de formulario, las va a capturar a través de eventos sobre un elemento de tipo \<canvas>. De la misma manera, en lugar de simplemente mostrar las coordenadas enviadas en los eventos a través de 'alertas', va a dibujar dichos puntos en el mismo canvas. Haga uso del mecanismo de captura de eventos de mouse/táctil usado en ejercicios anteriores con este fin.
 
 1. Haga que el 'callback' asociado al tópico /topic/newpoint en lugar de mostrar una alerta, dibuje un punto en el canvas en las coordenadas enviadas con los eventos recibidos. Para esto puede [dibujar un círculo de radio 1](http://www.w3schools.com/html/html5_canvas.asp).
+
+Adaptamos la aplicación para que capture los puntos directamente sobre el `<canvas>`, eliminando los campos de formulario. Añadimos un listener de eventos de clic (o táctil) sobre el canvas que calcula las coordenadas `X` y `Y` donde ocurre el evento y las publica automáticamente en el tópico `/topic/newpoint`.
+
+Además, modificamos el callback de la suscripción para que, en lugar de mostrar alertas, dibuje los puntos recibidos en el canvas como pequeños círculos de radio 1. De este modo, todos los clientes conectados pueden ver los puntos en tiempo real, manteniendo la sincronización de la actividad sobre el canvas.
+
+![](img/image4.png)
+
+![](img/image5.png)
+
 4. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
 
-5. Haga commit de lo realizado, para marcar el avance de la parte 2.
+![](img/image p2.png)
 
-	```bash
-	git commit -m "PARTE 2".
-	```
-
+![](img/image p21.png)
 ## Parte III.
 
 Ajuste la aplicación anterior para que pueda manejar más de un dibujo a la vez, manteniendo tópicos independientes. Para esto:
