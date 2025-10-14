@@ -37,4 +37,6 @@ public interface BlueprintsPersistence {
     public Set<Blueprint> getAllBlueprints();
 
     public void updateBlueprint(String author, String bpname, Blueprint bp);
+
+    public boolean deleteBlueprint(String author, String bpname);
 }

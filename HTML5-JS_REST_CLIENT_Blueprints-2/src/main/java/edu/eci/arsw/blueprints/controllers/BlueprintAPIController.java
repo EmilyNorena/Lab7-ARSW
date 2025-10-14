@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author hcadavid
  */
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "/blueprints")
 public class BlueprintAPIController {
@@ -99,6 +99,21 @@ public class BlueprintAPIController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception ex) {
             Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value="/{author}/{bpname}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteBlueprint(@PathVariable("author") String author,
+                                             @PathVariable("bpname") String bpname){
+        try{
+            if(blueprintServices.deleteBlueprint(author, bpname)){
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch(Exception e){
+            Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, e);
             return new ResponseEntity<>("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
