@@ -26,8 +26,8 @@ var app = (function () {
                 <td>${bp.points.length}</td>
                 <td>
                     <button class="btn btn-success btn-sm btn-draw" data-bpname="${bp.name}">Draw</button>
-                    <button class="btn btn-warning btn-sm delete-btn" data-bpname="${bp.name}"">Update</button>
-                    <button class="btn btn-danger btn-sm delete-btn" data-bpname="${bp.name}"">Delete</button>
+                    <button class="btn btn-warning btn-sm btn-update" data-bpname="${bp.name}"">Update</button>
+                    <button class="btn btn-danger btn-sm btn-delete" data-bpname="${bp.name}"">Delete</button>
                 </td>
             </tr>`;
             $("#tabla-blueprints tbody").append(row);
@@ -41,6 +41,15 @@ var app = (function () {
             let bpname = $(this).data("bpname");
             app.drawBlueprint(selectedAuthor, bpname);
         });
+        $(".btn-delete").click(function () {
+            let bpname = $(this).data("bpname");
+            app.deleteBlueprint(selectedAuthor, bpname);
+        });
+        $(".btn-update").click(function () {
+            const bpname = $(this).data("bpname");
+            app.updateBlueprint(selectedAuthor, bpname);
+        });
+
     }
 
     function drawBlueprint(author, bpname) {
@@ -103,8 +112,18 @@ var app = (function () {
                 updateBlueprintsInfo([]);
                 return [];
             }
-        }
-        ,
+        },
+        deleteBlueprint: async function (authname, bpname) {
+            try {
+                if (api === apiclient) {
+                    await apiclient.deleteBlueprints(authname, bpname);
+                    alert("Blueprint deleted successfully!");
+                }
+                app.getBlueprintsByAuthor(authname);
+            } catch (err) {
+                console.error("Error eliminando blueprint:", err);
+            }
+        },
         drawBlueprint: drawBlueprint,
         switchApi: function () {
             if (api === apimock) {
@@ -175,7 +194,96 @@ var app = (function () {
             form.appendChild(instruction);
             form.appendChild(btnSave);
             addFormContainer.appendChild(form);
+        },
+        updateBlueprint: function (author, bpname) {
+            console.log(`Actualizando blueprint: ${bpname} de ${author}`);
+            app.clearCanvas();
+            app.setaddPointsBool(true);
+
+            const addFormContainer = document.getElementById("add-form-container");
+            addFormContainer.innerHTML = "";
+
+            // Obtenemos el blueprint actual
+            api.getBlueprintsByNameAndAuthor(author, bpname, function (blueprint) {
+                if (!blueprint || !blueprint.points) {
+                    alert("No se encontraron puntos en el blueprint.");
+                    return;
+                }
+
+                points = blueprint.points.slice(); // copiamos los puntos actuales
+
+                // Redibujamos en el canvas
+                const ctx = canvas.getContext("2d");
+                redrawCanvas(points, ctx);
+
+                // Creamos formulario
+                const form = document.createElement("form");
+                form.style.flexDirection = "column";
+
+                const formTitle = document.createElement("h4");
+                formTitle.textContent = `Update Blueprint: ${bpname}`;
+                formTitle.style.textAlign = "center";
+
+                const bpAuthor = document.createElement("input");
+                const bpName = document.createElement("input");
+                bpAuthor.type = "text";
+                bpName.type = "text";
+                bpAuthor.value = author;
+                bpName.value = bpname;
+                bpAuthor.placeholder = "Author";
+                bpName.placeholder = "Blueprint name";
+
+                const instruction = document.createElement("p");
+                instruction.textContent = "Click on the canvas to add new points or modify existing ones.";
+                instruction.style.fontSize = "1.1em";
+                instruction.style.marginTop = "8px";
+
+                const btnSave = document.createElement("button");
+                btnSave.id = "btn-update-save";
+                btnSave.className = "btn btn-warning";
+                btnSave.textContent = "Save Changes";
+
+                [bpAuthor, bpName].forEach(input => {
+                    input.style.padding = "8px";
+                    input.style.border = "1px solid orange";
+                    input.style.borderRadius = "5px";
+                    form.appendChild(input);
+                });
+
+                form.appendChild(formTitle);
+                form.appendChild(instruction);
+                form.appendChild(btnSave);
+                addFormContainer.appendChild(form);
+
+                // Guardar cambios
+                $(document).off("click", "#btn-update-save"); // evitamos duplicar el event handler
+                $(document).on("click", "#btn-update-save", async function (event) {
+                    event.preventDefault();
+
+                    const newAuthor = bpAuthor.value.trim();
+                    const newName = bpName.value.trim();
+
+                    if (!newAuthor || !newName || !points || points.length === 0) {
+                        alert("Please enter author, blueprint name, and points before saving.");
+                        return;
+                    }
+
+                    try {
+                        await apiclient.putBlueprints(newAuthor, newName, points);
+                        alert("Blueprint updated successfully!");
+
+                        await app.getBlueprintsByAuthor(newAuthor);
+                        addFormContainer.innerHTML = "";
+                        app.clearCanvas();
+                        app.setaddPointsBool(false);
+                    } catch (err) {
+                        console.error("Error updating blueprint:", err);
+                        alert("Error updating blueprint. Check console.");
+                    }
+                });
+            });
         }
+
     };
 })();
 
@@ -206,6 +314,11 @@ $(document).ready(function () {
         tempPoints = [];
     });
 
+    $("#btn-add").click(function () {
+        app.drawAddForm();
+        tempPoints = [];
+    });
+
     $(document).on("click", "#btn-save", async function (event) {
         event.preventDefault();
 
@@ -214,7 +327,7 @@ $(document).ready(function () {
         const author = $("#add-form-container input[placeholder='Blueprints author']").val();
         const name = $("#add-form-container input[placeholder='Blueprints name']").val();
         const search_bar = document.getElementById("input-autor");
-        
+
         if (!author || !name) {
             alert("Please enter both author and blueprint name before saving.");
             return;
@@ -228,7 +341,6 @@ $(document).ready(function () {
             const blueprints = await apiclient.getBlueprintsByAuthor(author);
             app.getBlueprintsByAuthor(author);
 
-            // Limpiamos formulario y canvas
             $("#add-form-container").empty();
             app.clearCanvas();
             tempPoints = [];

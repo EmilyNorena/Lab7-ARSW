@@ -28,10 +28,16 @@ var apiclient = (function () {
         putBlueprints: function (authname, bpname, points) {
             const blueprint = { author: authname, name: bpname, points: points };
             return $.ajax({
-                url: apiUrl,
+                url: `${apiUrl}/${authname}/${bpname}`,
                 method: "PUT",
                 contentType: "application/json",
                 data: JSON.stringify(blueprint)
+            });
+        },
+        deleteBlueprints: function (authname, bpname) {
+            return $.ajax({
+                url: `${apiUrl}/${authname}/${bpname}`,
+                method: "DELETE",
             });
         }
     };
