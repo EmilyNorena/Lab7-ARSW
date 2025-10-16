@@ -22,7 +22,7 @@ if (window.PointerEvent) {
 	1. Se agregue el punto al final de la secuencia de puntos del canvas actual (sólo en la memoria de la aplicación, AÚN NO EN EL API!).
 	2. Se repinte el dibujo.
 
-<img src="img/punto2.1.png">
+<img src="img/punto 2.1.png" width="600px">
 <img src="img/punto2.2.png">
 
 3. Agregue el botón Save/Update. Respetando la arquitectura de módulos actual del cliente, haga que al oprimirse el botón:
