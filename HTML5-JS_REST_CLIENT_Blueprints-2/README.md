@@ -22,14 +22,23 @@ if (window.PointerEvent) {
 	1. Se agregue el punto al final de la secuencia de puntos del canvas actual (sólo en la memoria de la aplicación, AÚN NO EN EL API!).
 	2. Se repinte el dibujo.
 
-<img src="img/punto 2.1.png" width="600px">
+<img src="img/punto 2.1.png" width="400px">
 <img src="img/punto2.2.png">
 
 3. Agregue el botón Save/Update. Respetando la arquitectura de módulos actual del cliente, haga que al oprimirse el botón:
-	1. Se haga PUT al API, con el plano actualizado, en su recurso REST correspondiente.
-	2. Se haga GET al recurso /blueprints, para obtener de nuevo todos los planos realizados.
-	3. Se calculen nuevamente los puntos totales del usuario.
+   
+	Se haga PUT al API, con el plano actualizado, en su recurso REST correspondiente.
 
+	<img src="img/punto3.4.png">
+	
+	Se haga GET al recurso /blueprints, para obtener de nuevo todos los planos realizados.
+
+	Se calculen nuevamente los puntos totales del usuario.
+
+	<img src="img/punto3.1.png">
+	<img src="img/punto3.2.png">
+	<img src="img/punto3.3.png">
+	
 	Para lo anterior tenga en cuenta:
 
 	* jQuery no tiene funciones para peticiones PUT o DELETE, por lo que es necesario 'configurarlas' manualmente a través de su API para AJAX. Por ejemplo, para hacer una peticion PUT a un recurso /myrecurso:
@@ -50,18 +59,33 @@ if (window.PointerEvent) {
 	```
 	* Como en este caso se tienen tres operaciones basadas en _callbacks_, y que las mismas requieren realizarse en un orden específico, tenga en cuenta cómo usar las promesas de JavaScript [mediante alguno de los ejemplos disponibles](http://codepen.io/hcadavid/pen/jrwdgK).
 
+<img src="img/punto3.5.png" width="400px">
+
 4. Agregue el botón 'Create new blueprint', de manera que cuando se oprima: 
 	* Se borre el canvas actual.
 	* Se solicite el nombre del nuevo 'blueprint' (usted decide la manera de hacerlo).
-	
-	Esta opción debe cambiar la manera como funciona la opción 'save/update', pues en este caso, al oprimirse la primera vez debe (igualmente, usando promesas):
 
-	1. Hacer POST al recurso /blueprints, para crear el nuevo plano.
-	2. Hacer GET a este mismo recurso, para actualizar el listado de planos y el puntaje del usuario.
+	<img src="img/punto4.1.png">
+	<img src="img/punto4.2.png">
+	
+	Esta opción debe cambiar la manera como funciona la opción 'save/update', pues en este caso, 	al oprimirse la primera vez debe (igualmente, usando promesas):
+
+	<img src="img/punto4.4.png" width="400px">
+
+	Hacer POST al recurso /blueprints, para crear el nuevo plano.
+	
+	<img src="img/punto4.3.png">
+	
+	Hacer GET a este mismo recurso, para actualizar el listado de planos y el puntaje del 			usuario.
 
 5. Agregue el botón 'DELETE', de manera que (también con promesas):
+	<img src="img/punto5.1.png">
+	<img src="img/punto5.2.png">
 	* Borre el canvas.
 	* Haga DELETE del recurso correspondiente.
+	<img src="img/punto5.3.png">
+	<img src="img/punto5.4.png" width="300px">
+	
 	* Haga GET de los planos ahora disponibles.
 
 ### Criterios de evaluación
